@@ -37,11 +37,18 @@ func main() {
 	//	panic(err)
 	//}
 
-	products, err := database.SelectAllProduct(db)
+	//products, err := database.SelectAllProduct(db)
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	//fmt.Printf("%v\n", products)
+
+	product, err := database.SelectOneProduct(db, 1)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("%v\n", products)
+	fmt.Printf("%v\n", product)
 
 }

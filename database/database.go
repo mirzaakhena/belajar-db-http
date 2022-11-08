@@ -85,3 +85,32 @@ func SelectAllProduct(db *sql.DB) ([]model.Product, error) {
 
 	return result, nil
 }
+
+func SelectOneProduct(db *sql.DB, id int) (*model.Product, error) {
+
+	var product model.Product
+
+	err := db.
+		QueryRow("SELECT * FROM product WHERE id = ?", id).
+		Scan(&product.ID, &product.Nama, &product.Harga, &product.Stok)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &product, nil
+}
+
+func UpdateOneProduct(db *sql.DB, product model.Product) error {
+
+	// ...
+
+	return nil
+}
+
+func DeleteProduct(db *sql.DB, id int) error {
+
+	// ...
+
+	return nil
+}
