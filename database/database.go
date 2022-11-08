@@ -50,3 +50,38 @@ func InsertProduct(db *sql.DB, product model.Product) error {
 	return nil
 
 }
+
+func SelectAllProduct(db *sql.DB) ([]model.Product, error) {
+
+	result := make([]model.Product, 0)
+
+	row, err := db.Query("SELECT * FROM product")
+	if err != nil {
+		return nil, err
+	}
+
+	columns, err := row.Columns()
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Printf("Columns %v\n", columns)
+
+	for row.Next() {
+		err := row.Err()
+		if err != nil {
+			return nil, err
+		}
+
+		var product model.Product
+
+		err = row.Scan(&product.ID, &product.Nama, &product.Harga, &product.Stok)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, product)
+	}
+
+	return result, nil
+}

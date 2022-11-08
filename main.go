@@ -2,7 +2,6 @@ package main
 
 import (
 	"belajar/database"
-	"belajar/model"
 	"fmt"
 )
 
@@ -25,17 +24,24 @@ func main() {
 		panic(err)
 	}
 
-	product := model.Product{
-		Nama:  "Manggis",
-		Harga: 13600,
-		Stok:  9,
-	}
+	fmt.Printf("bisa konek db\n")
 
-	err = database.InsertProduct(db, product)
+	//product := model.Product{
+	//	Nama:  "Jeruk",
+	//	Harga: 21300,
+	//	Stok:  3,
+	//}
+
+	//err = database.InsertProduct(db, product)
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	products, err := database.SelectAllProduct(db)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("bisa konek db\n")
+	fmt.Printf("%v\n", products)
 
 }
