@@ -2,6 +2,7 @@ package main
 
 import (
 	"belajar/database"
+	"belajar/model"
 	"fmt"
 )
 
@@ -12,12 +13,25 @@ func main() {
 		panic(err)
 	}
 
+	defer func() {
+		err = database.CloseDatabase(db)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
 	err = db.Ping()
 	if err != nil {
 		panic(err)
 	}
 
-	err = database.CloseDatabase(db)
+	product := model.Product{
+		Nama:  "Manggis",
+		Harga: 13600,
+		Stok:  9,
+	}
+
+	err = database.InsertProduct(db, product)
 	if err != nil {
 		panic(err)
 	}

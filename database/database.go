@@ -1,7 +1,9 @@
 package database
 
 import (
+	"belajar/model"
 	"database/sql"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -23,5 +25,28 @@ func OpenDatabase() (*sql.DB, error) {
 }
 
 func CloseDatabase(db *sql.DB) error {
-	return db.Close()
+	err := db.Close()
+	return err
+}
+
+func InsertProduct(db *sql.DB, product model.Product) error {
+
+	row, err := db.Query(`
+		INSERT INTO product(nama, harga, stok) 
+		VALUES (?, ?, ?)
+	`, product.Nama, product.Harga, product.Stok)
+
+	if err != nil {
+		return err
+	}
+
+	err = row.Close()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("product sudah diinsert\n")
+
+	return nil
+
 }
