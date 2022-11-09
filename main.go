@@ -2,8 +2,7 @@ package main
 
 import (
 	"belajar/database"
-	"belajar/model"
-	"net/http"
+	"belajar/server"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,55 +14,28 @@ func main() {
 		panic(err)
 	}
 
+	service := server.MyService{
+		DB: db,
+	}
+
 	r := gin.Default()
 
 	// REST API CRUD
 
 	// CREATE
-	r.POST("/products", func(c *gin.Context) {
-
-		var product model.Product
-		err := c.BindJSON(&product)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-
-		err = product.Validate()
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-
-		err = database.InsertProduct(db, product)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusOK, product)
-
-	})
+	r.POST("/products", service.CreateProduct)
 
 	// READ ALL
-	r.GET("/products", func(c *gin.Context) {
-		// ...
-	})
+	r.GET("/products", service.GetAllProduct)
 
 	// READ ONE
-	r.GET("/products/:product_id", func(c *gin.Context) {
-		// ...
-	})
+	r.GET("/products/:product_id", service.GetOneProduct)
 
 	// UPDATE
-	r.PUT("/products/:product_id", func(c *gin.Context) {
-		// ...
-	})
+	r.PUT("/products/:product_id", service.UpdateProduct)
 
 	// DELETE
-	r.DELETE("/products/:product_id", func(c *gin.Context) {
-		// ...
-	})
+	r.DELETE("/products/:product_id", service.DeleteProduct)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
