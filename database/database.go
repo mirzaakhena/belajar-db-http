@@ -31,7 +31,13 @@ func CloseDatabase(db *sql.DB) error {
 
 func InsertProduct(db *sql.DB, product model.Product) error {
 
-	row, err := db.Query(`
+	// stmt, err := db.Prepare("INSERT INTO product(nama, harga, stok) VALUES (?, ?, ?)")
+	// if err != nil {
+	// 	return err
+	// }
+	// stmt.Exec(product.Nama, product.Harga, product.Stok)
+
+	result, err := db.Exec(`
 		INSERT INTO product(nama, harga, stok) 
 		VALUES (?, ?, ?)
 	`, product.Nama, product.Harga, product.Stok)
@@ -40,12 +46,12 @@ func InsertProduct(db *sql.DB, product model.Product) error {
 		return err
 	}
 
-	err = row.Close()
+	id, err := result.LastInsertId()
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("product sudah diinsert\n")
+	fmt.Printf("product sudah diinsert dengan id %v\n", id)
 
 	return nil
 
@@ -103,14 +109,32 @@ func SelectOneProduct(db *sql.DB, id int) (*model.Product, error) {
 
 func UpdateOneProduct(db *sql.DB, product model.Product) error {
 
-	// ...
+	_, err := db.Exec(`
+		UPDATE product SET nama = ?, harga = ?, stok = ? WHERE id = ?`,
+		product.Nama,
+		product.Harga,
+		product.Stok,
+		product.ID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("product sudah di update\n")
 
 	return nil
 }
 
 func DeleteProduct(db *sql.DB, id int) error {
 
-	// ...
+	_, err := db.Exec(`DELETE product WHERE id = ?`, id)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("product sudah di delete\n")
 
 	return nil
 }

@@ -2,7 +2,10 @@ package main
 
 import (
 	"belajar/database"
-	"fmt"
+	"belajar/model"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -12,43 +15,56 @@ func main() {
 		panic(err)
 	}
 
-	defer func() {
-		err = database.CloseDatabase(db)
+	r := gin.Default()
+
+	// REST API CRUD
+
+	// CREATE
+	r.POST("/products", func(c *gin.Context) {
+
+		var product model.Product
+		err := c.BindJSON(&product)
 		if err != nil {
-			panic(err)
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
 		}
-	}()
 
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
+		err = product.Validate()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
 
-	fmt.Printf("bisa konek db\n")
+		err = database.InsertProduct(db, product)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, err.Error())
+			return
+		}
 
-	//product := model.Product{
-	//	Nama:  "Jeruk",
-	//	Harga: 21300,
-	//	Stok:  3,
-	//}
+		c.JSON(http.StatusOK, product)
 
-	//err = database.InsertProduct(db, product)
-	//if err != nil {
-	//	panic(err)
-	//}
+	})
 
-	//products, err := database.SelectAllProduct(db)
-	//if err != nil {
-	//	panic(err)
-	//}
+	// READ ALL
+	r.GET("/products", func(c *gin.Context) {
+		// ...
+	})
 
-	//fmt.Printf("%v\n", products)
+	// READ ONE
+	r.GET("/products/:product_id", func(c *gin.Context) {
+		// ...
+	})
 
-	product, err := database.SelectOneProduct(db, 1)
-	if err != nil {
-		panic(err)
-	}
+	// UPDATE
+	r.PUT("/products/:product_id", func(c *gin.Context) {
+		// ...
+	})
 
-	fmt.Printf("%v\n", product)
+	// DELETE
+	r.DELETE("/products/:product_id", func(c *gin.Context) {
+		// ...
+	})
+
+	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 
 }

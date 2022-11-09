@@ -9,21 +9,31 @@ type Product struct {
 	Stok  int     `json:"stok"`
 }
 
+func (p Product) Validate() error {
+
+	if p.Nama == "" {
+		return fmt.Errorf("nama tidak boleh kosong")
+	}
+
+	if p.Harga <= 0 {
+		return fmt.Errorf("stok harus > 0")
+	}
+
+	return nil
+}
+
 func NewProduct(id int, nama string, harga float64, stok int) (*Product, error) {
-
-	if nama == "" {
-		return nil, fmt.Errorf("nama tidak boleh kosong")
-	}
-
-	if stok <= 0 {
-		return nil, fmt.Errorf("stok harus > 0")
-	}
 
 	product := Product{
 		ID:    id,
 		Nama:  nama,
 		Harga: harga,
 		Stok:  stok,
+	}
+
+	err := product.Validate()
+	if err != nil {
+		return nil, err
 	}
 
 	return &product, nil
