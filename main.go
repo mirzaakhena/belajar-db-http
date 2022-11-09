@@ -14,29 +14,23 @@ func main() {
 		panic(err)
 	}
 
-	service := server.MyService{
-		DB: db,
-	}
+	defer func() {
+		err := database.CloseDatabase(db)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	service := server.MyService{DB: db}
 
 	r := gin.Default()
 
-	// REST API CRUD
-
-	// CREATE
 	r.POST("/products", service.CreateProduct)
-
-	// READ ALL
 	r.GET("/products", service.GetAllProduct)
-
-	// READ ONE
 	r.GET("/products/:product_id", service.GetOneProduct)
-
-	// UPDATE
 	r.PUT("/products/:product_id", service.UpdateProduct)
-
-	// DELETE
 	r.DELETE("/products/:product_id", service.DeleteProduct)
 
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run()
 
 }
