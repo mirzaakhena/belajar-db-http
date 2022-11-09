@@ -10,34 +10,20 @@ import (
 
 // go get -v github.com/go-sql-driver/mysql
 
-func OpenDatabase() (*sql.DB, error) {
-
-	db, err := sql.Open(
-		"mysql",
-		"root:mypass123@tcp(127.0.0.1:3306)/belajar_db",
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
+type NativeMySQL struct {
+	DB *sql.DB
 }
 
-func CloseDatabase(db *sql.DB) error {
-	err := db.Close()
-	return err
+func NewNativeMySQL(db *sql.DB) (*NativeMySQL, error) {
+
+	fmt.Println(">>>>>>>> mysql native implementation")
+
+	return &NativeMySQL{DB: db}, nil
 }
 
-func InsertProduct(db *sql.DB, product *model.Product) error {
+func (n NativeMySQL) InsertProduct(product *model.Product) error {
 
-	// stmt, err := db.Prepare("INSERT INTO product(nama, harga, stok) VALUES (?, ?, ?)")
-	// if err != nil {
-	// 	return err
-	// }
-	// stmt.Exec(product.Nama, product.Harga, product.Stok)
-
-	result, err := db.Exec(`
+	result, err := n.DB.Exec(`
 		INSERT INTO product(nama, harga, stok) 
 		VALUES (?, ?, ?)
 	`, product.Nama, product.Harga, product.Stok)
@@ -56,14 +42,13 @@ func InsertProduct(db *sql.DB, product *model.Product) error {
 	fmt.Printf("product sudah diinsert dengan id %v\n", id)
 
 	return nil
-
 }
 
-func SelectAllProduct(db *sql.DB) ([]model.Product, error) {
+func (n NativeMySQL) SelectAllProduct(page, size int) ([]model.Product, error) {
 
 	result := make([]model.Product, 0)
 
-	row, err := db.Query("SELECT * FROM product")
+	row, err := n.DB.Query("SELECT * FROM product LIMIT ? OFFSET ?", size, (page-1)*size)
 	if err != nil {
 		return nil, err
 	}
@@ -94,11 +79,11 @@ func SelectAllProduct(db *sql.DB) ([]model.Product, error) {
 	return result, nil
 }
 
-func SelectOneProduct(db *sql.DB, id int) (*model.Product, error) {
+func (n NativeMySQL) SelectOneProduct(id int) (*model.Product, error) {
 
 	var product model.Product
 
-	err := db.
+	err := n.DB.
 		QueryRow("SELECT * FROM product WHERE id = ?", id).
 		Scan(&product.ID, &product.Nama, &product.Harga, &product.Stok)
 
@@ -109,9 +94,9 @@ func SelectOneProduct(db *sql.DB, id int) (*model.Product, error) {
 	return &product, nil
 }
 
-func UpdateOneProduct(db *sql.DB, product model.Product) error {
+func (n NativeMySQL) UpdateOneProduct(product model.Product) error {
 
-	_, err := db.Exec(`
+	_, err := n.DB.Exec(`
 		UPDATE product SET nama = ?, harga = ?, stok = ? WHERE id = ?`,
 		product.Nama,
 		product.Harga,
@@ -128,9 +113,9 @@ func UpdateOneProduct(db *sql.DB, product model.Product) error {
 	return nil
 }
 
-func DeleteProduct(db *sql.DB, id int) error {
+func (n NativeMySQL) DeleteProduct(id int) error {
 
-	_, err := db.Exec(`DELETE product WHERE id = ?`, id)
+	_, err := n.DB.Exec(`DELETE FROM product WHERE id = ?`, id)
 
 	if err != nil {
 		return err

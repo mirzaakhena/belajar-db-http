@@ -3,10 +3,14 @@ package model
 import "fmt"
 
 type Product struct {
-	ID    int64   `json:"id"`
+	ID    int64   `json:"id" gorm:"primaryKey;autoIncrement"`
 	Nama  string  `json:"nama"`
 	Harga float64 `json:"harga"`
 	Stok  int     `json:"stok"`
+}
+
+func (Product) TableName() string {
+	return "product"
 }
 
 func (p Product) Validate() error {
@@ -15,7 +19,7 @@ func (p Product) Validate() error {
 		return fmt.Errorf("nama tidak boleh kosong")
 	}
 
-	if p.Harga <= 0 {
+	if p.Stok <= 0 {
 		return fmt.Errorf("stok harus > 0")
 	}
 

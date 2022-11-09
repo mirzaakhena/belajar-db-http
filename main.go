@@ -21,7 +21,12 @@ func main() {
 		}
 	}()
 
-	service := server.MyService{DB: db}
+	dbImpl, err := database.NewMockImpl(db)
+	if err != nil {
+		panic(err)
+	}
+
+	service := server.MyService{Repo: dbImpl}
 
 	r := gin.Default()
 
