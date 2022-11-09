@@ -3,7 +3,7 @@ package model
 import "fmt"
 
 type Product struct {
-	ID    int     `json:"id"`
+	ID    int64   `json:"id"`
 	Nama  string  `json:"nama"`
 	Harga float64 `json:"harga"`
 	Stok  int     `json:"stok"`
@@ -22,7 +22,7 @@ func (p Product) Validate() error {
 	return nil
 }
 
-func NewProduct(id int, nama string, harga float64, stok int) (*Product, error) {
+func NewProduct(id int64, nama string, harga float64, stok int) (*Product, error) {
 
 	product := Product{
 		ID:    id,

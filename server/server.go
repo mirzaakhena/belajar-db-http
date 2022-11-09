@@ -28,7 +28,7 @@ func (m MyService) CreateProduct(c *gin.Context) {
 		return
 	}
 
-	err = database.InsertProduct(m.DB, product)
+	err = database.InsertProduct(m.DB, &product)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return

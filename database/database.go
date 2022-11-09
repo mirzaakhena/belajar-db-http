@@ -29,7 +29,7 @@ func CloseDatabase(db *sql.DB) error {
 	return err
 }
 
-func InsertProduct(db *sql.DB, product model.Product) error {
+func InsertProduct(db *sql.DB, product *model.Product) error {
 
 	// stmt, err := db.Prepare("INSERT INTO product(nama, harga, stok) VALUES (?, ?, ?)")
 	// if err != nil {
@@ -50,6 +50,8 @@ func InsertProduct(db *sql.DB, product model.Product) error {
 	if err != nil {
 		return err
 	}
+
+	product.ID = id
 
 	fmt.Printf("product sudah diinsert dengan id %v\n", id)
 
